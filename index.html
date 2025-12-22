@@ -12,80 +12,81 @@
   </head>
   <body>
     <main>
-        <section id="musicPlayerContainer">
-            <div class="conatainer">
-                <div id="top">
-                    <h1 id="songTitle">Lorem, ipsum dolor.</h1>
-                </div>
-                <div id="left">
-                    <div class="coverContainer">
-                        <img src="" alt="">
-                    </div>
-                </div>
-                <div id="right">
-                    <div class="playlistContainer">
-                        <div class="playlistTop">
-                            <h3></h3>
-                            <h3></h3>
-                            <h4></h4>
-                        </div>
-                        <div class="playlistBottom">
-                            <div class="playlistItem">
-                                <span class="count">1</span>
-                                <h3 class="songName">Bad</h3>
-                                <span class="songDuration">5:00</span>
-                            </div>
-                            <div class="playlistItem">
-                                <span class="count">1</span>
-                                <h3 class="songName">Bad</h3>
-                                <span class="songDuration">5:00</span>
-                            </div>
-                            <div class="playlistItem">
-                                <span class="count">1</span>
-                                <h3 class="songName">Bad</h3>
-                                <span class="songDuration">5:00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="bottom">
-                    <div class="musicControl">
-                        <div id="playPause">
-                            <button class="forBack" 
-                            id="rewind" type="button"><i class="ri-rewind-start-fill"></i></button>
-                            <button class="playPause" id="playPause" type="button"><i class="ri-play-fill"></i></button>
-                            <button class="forBack" id="forward" type="button"><i class="ri-forward-end-fill"></i></button>
-                        </div>
-                        <div id="musicStatus">
-                            <div class="musicStatusTop">
-                                <h3 class="songName">Bad</h3>
-                                <div class="iconGroup">
-                                    <button type="button" id="like"><i class="ri-heart-fill"></i></button>
-                                    <button type="button" id="loop"><i class="ri-repeat-line"></i></button>
-                                    <button type="button" id="shuffle"><i class="ri-shuffle-line"></i></button>
-                                </div>
-                            </div>
-                            <div class="musicStatusMiddle">
-                                <div id="bar" class="songBar">
-                                    <div id="barFill"></div>
-                                </div>
-                            </div>
-                            <div class="musicStatusBottom">
-                                <h4 class="artistName">MJ</h4>
-                                <span class="duration">5:00</span>
-                            </div>
-                        </div>
-                        <div id="volumeControl">
-                            <button type="button" id="volDown"></button>
-                            <div id="volumeBar">
-                                <div id="volumeFill"></div>
-                            </div>
-                            <button type="button" id="volUp"></button>
-                        </div>
-                    </div>
-                </div>
+      <section id="musicPlayerContainer">
+        <div class="container">
+          <div class="playerHeader">
+            <h1 id="songTitle">Lorem, ipsum dolor.</h1>
+          </div>
+          <div class="playerCover">
+            <div class="coverContainer">
+              <img src="" alt="" />
             </div>
-        </section>
+          </div>
+          <div class="playerPLaylist">
+            <div class="playlistContainer">
+              <div class="playlistTop">
+                <h3>Bad</h3>
+                <h3>MJ</h3>
+                <h4>3 Songs</h4>
+              </div>
+              <ul class="playlistBottom">
+                <li class="playlistItem" data-index="0">
+                  <span class="count">1</span>
+                  <span class="songName">Bad</span>
+                  <span class="songDuration">5:00</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="playerControl">
+            <div class="musicControl">
+              <div class="playPauseGroup">
+                <button class="control-btn rewind" id="rewind" type="button">
+                  <i class="ri-rewind-start-fill"></i>
+                </button>
+                <button class="control-btn play" id="playBtn" type="button">
+                  <i class="ri-play-fill"></i>
+                </button>
+                <button class="control-btn forward" id="forward" type="button">
+                  <i class="ri-forward-end-fill"></i>
+                </button>
+              </div>
+              <div id="musicStatus">
+                <div class="musicStatusTop">
+                  <h3 class="songName">Bad</h3>
+                  <div class="iconGroup">
+                    <button type="button" id="like" aria-label="Like song">
+                      <i class="ri-heart-fill"></i>
+                    </button>
+                    <button type="button" id="loop" aria-label="loop song">
+                      <i class="ri-repeat-line"></i>
+                    </button>
+                    <button type="button" id="shuffle" aria-label="shuffle songs">
+                      <i class="ri-shuffle-line"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="musicStatusMiddle">
+                  <div class="songBar">
+                    <div class="barFill"></div>
+                  </div>
+                </div>
+                <div class="musicStatusBottom">
+                  <span class="artistName">MJ</span>
+                  <span class="duration">5:00</span>
+                </div>
+              </div>
+              <div id="volumeControl">
+                <button type="button" class="volumeBtn volumeDown"></button>
+                <div class="volumeBar">
+                  <div class="volumeLevel"></div>
+                </div>
+                <button type="button" class="volumeBtn volumeUp"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
     <script src="script.js"></script>
   </body>
