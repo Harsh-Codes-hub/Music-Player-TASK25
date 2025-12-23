@@ -1,10 +1,188 @@
+@font-face {
+  font-family: Inter;
+  src: url("./fonts/Inter-VariableFont_opsz,wght.woff2");
+}
+:root {
+  --bg-dark: oklch(0.1 0 20);
+  --bg: oklch(0.15 0 20);
+  --bg-light: oklch(0.2 0 20);
+  --text: oklch(0.96 0 20);
+  --text-muted: oklch(0.76 0 20);
+  --highlight: oklch(0.5 0 20);
+  --border: oklch(0.4 0 20);
+  --border-muted: oklch(0.3 0 20);
+  --primary: oklch(0.76 0.1 20);
+  --secondary: oklch(0.76 0.1 200);
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  font-size: clamp(14px, 1vw, 21px);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: var(--text);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+body {
+  background-color: var(--bg-dark);
+}
+
+main {
+  width: 100%;
+}
+main .musicPlayerContainer {
+  height: 100vh;
+  width: 100%;
+  margin-inline: auto;
+  background-image: url("https://i.scdn.co/image/ab67616d0000b273af7e323ae057aa3ea6c67fa8");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+main .musicPlayerContainer .container {
+  padding: 1rem 3rem;
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  background-color: rgba(1, 1, 1, 0.4);
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 10% 75% 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "header header" "cover playlist" "controls controls";
+}
+
+.playerControl {
+  border: 1px solid white;
+}
+
+.playerHeader {
+  grid-area: header;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.playerHeader h1 {
+  text-align: center;
+  font-size: 2.3rem;
+  color: var(--text);
+  -webkit-text-stroke: 1px var(--bg-dark);
+  text-shadow: 1px 2px 1px var(--bg-dark);
+  font-weight: 700;
+}
+
+.playerCover {
+  grid-area: cover;
+  width: 100%;
+  height: 100%;
+  padding-block: 1rem;
+}
+.playerCover .coverContainer {
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-inline: auto;
+  margin-inline-end: 100px;
+}
+.playerCover .coverContainer img {
+  height: 100%;
+}
+
+.playerPLaylist {
+  grid-area: playlist;
+  width: 100%;
+  padding-block: 1rem;
+}
+.playerPLaylist .playlistContainer {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 15% 1fr;
+}
+.playerPLaylist .playlistContainer .playlistTop {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+.playerPLaylist .playlistContainer .playlistBottom {
+  height: -moz-max-content;
+  height: max-content;
+  list-style-type: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+.playlistTop .currentPlayDetail {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 5px var(--bg-dark);
+}
+.playlistTop .totalSongs {
+  color: var(--text-muted);
+  margin-top: 8px;
+  text-shadow: 2px 2px 5px var(--bg-dark);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.playlistBottom {
+  padding-block: 10px;
+}
+.playlistBottom .playlistItem {
+  border-top: 2px solid var(--text-muted);
+  width: 98%;
+  padding: 15px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  transition: background-color linear 0.5s, border-top linear 0.3s;
+}
+.playlistBottom .playlistItem:last-child {
+  border-bottom: 1px solid var(--text-muted);
+}
+.playlistBottom .playlistItem .songName {
+  margin-left: 30px;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-right: auto;
+}
+.playlistBottom .playlistItem:hover {
+  background-color: rgba(254, 254, 254, 0.3);
+  border-top: 2px solid var(--text);
+}
+
+.playerControl {
+  width: 100%;
+  grid-area: controls;
 }/*# sourceMappingURL=style.css.map */
