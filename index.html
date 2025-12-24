@@ -12,15 +12,16 @@
   </head>
   <body>
     <main>
+      <audio id="audio" preload="metadata"></audio>
       <section class="musicPlayerContainer">
         <div class="container">
           <div class="playerHeader">
-            <h1 class="songTitle">Bad</h1>
+            <h1 class="songTitle">No Song Playing</h1>
           </div>
           <div class="playerCover">
             <div class="coverContainer">
               <img
-                src="https://lh3.googleusercontent.com/sP8UJCisHbLa3mRrPd11Pua_bQBBAveuQ1r29akH9eB4rU4tJOZITdPK9Vor5VouElLPPRvWWz4ZZVO2=w544-h544-l90-rj"
+                src="./covers/default-album-art.png"
                 alt=""
               />
             </div>
@@ -28,76 +29,16 @@
           <div class="playerPLaylist">
             <div class="playlistContainer">
               <div class="playlistTop">
-                <span class="currentSong currentPlayDetail">Bad</span>
-                <span class="currentArtist currentPlayDetail">MJ</span>
-                <span class="totalSongs">3 Songs</span>
+                <span class="currentSong currentPlayDetail">No Song Playing</span>
+                <span class="currentArtist currentPlayDetail"></span>
+                <span class="totalSongs"></span>
               </div>
               <ul class="playlistBottom">
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
-                <li class="playlistItem" data-index="0">
-                  <span class="count">1</span>
-                  <span class="songName">Bad</span>
-                  <span class="songDuration">5:00</span>
-                </li>
+                <!-- <li class="playlistItem" data-index="">
+                  <span class="count"></span>
+                  <span class="name"></span>
+                  <span class="duration"></span>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -116,7 +57,7 @@
               </div>
               <div class="musicStatus">
                 <div class="musicStatusTop">
-                  <h3 class="songName">Bad</h3>
+                  <h3 class="songName">No Song Playing</h3>
                   <div class="iconGroup">
                     <button type="button" id="like" aria-label="Like song">
                       <i class="ri-heart-fill"></i>
@@ -139,8 +80,8 @@
                   </div>
                 </div>
                 <div class="musicStatusBottom">
-                  <span class="artistName">MJ</span>
-                  <span class="duration">5:00</span>
+                  <span class="artistName"></span>
+                  <span class="songDuration">--:--</span>
                 </div>
               </div>
               <div class="volumeControl">

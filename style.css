@@ -52,7 +52,7 @@ main .musicPlayerContainer {
   height: 100vh;
   width: 100%;
   margin-inline: auto;
-  background-image: url("https://lh3.googleusercontent.com/sP8UJCisHbLa3mRrPd11Pua_bQBBAveuQ1r29akH9eB4rU4tJOZITdPK9Vor5VouElLPPRvWWz4ZZVO2=w544-h544-l90-rj");
+  background-image: url("./covers/default-album-art.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -61,7 +61,7 @@ main .musicPlayerContainer .container {
   padding: 1rem 3rem;
   -webkit-backdrop-filter: blur(10px);
           backdrop-filter: blur(10px);
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(218, 41, 28, 0.2);
   width: 100%;
   height: 100%;
   display: grid;
@@ -81,8 +81,7 @@ main .musicPlayerContainer .container {
   text-align: center;
   font-size: 2.5rem;
   color: var(--danger);
-  -webkit-text-stroke: 1px var(--bg-dark);
-  text-shadow: 1px 2px 1px var(--bg-dark);
+  text-shadow: 2px 2px 1px var(--bg-dark);
   font-weight: 700;
 }
 
@@ -243,7 +242,6 @@ main .musicPlayerContainer .container {
   text-shadow: 2px 2px 1px var(--bg-dark);
 }
 .musicStatus .musicStatusTop .songName {
-  -webkit-text-stroke: 1px var(--bg-dark);
   color: var(--danger);
 }
 .musicStatus .musicStatusTop .iconGroup {
@@ -277,7 +275,7 @@ main .musicPlayerContainer .container {
   overflow: hidden;
 }
 .musicStatusMiddle .songBar .songProgress {
-  background-color: var(--primary);
+  background-color: var(--danger);
   height: 100%;
   width: 50%;
   cursor: pointer;
@@ -319,6 +317,10 @@ main .musicPlayerContainer .container {
 }
 .volumeControl .volumeBar .volumeLevel {
   width: 75%;
-  background-color: var(--primary);
+  background-color: var(--danger);
   height: 100%;
+}
+
+#audio {
+  display: hidden;
 }/*# sourceMappingURL=style.css.map */
