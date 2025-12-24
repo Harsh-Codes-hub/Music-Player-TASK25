@@ -11,12 +11,12 @@
   --highlight: oklch(0.5 0 20);
   --border: oklch(0.4 0 20);
   --border-muted: oklch(0.3 0 20);
-  --primary: oklch(0.76 0.1 20);
-  --secondary: oklch(0.76 0.1 200);
-  --danger: oklch(0.7 0.05 30);
-  --warning: oklch(0.7 0.05 100);
-  --success: oklch(0.7 0.05 160);
-  --info: oklch(0.7 0.05 260);
+  --primary: oklch(0.76 0.2 20);
+  --secondary: oklch(0.76 0.2 200);
+  --danger: oklch(0.7 0.2 30);
+  --warning: oklch(0.7 0.2 100);
+  --success: oklch(0.7 0.2 160);
+  --info: oklch(0.7 0.2 260);
   font-size: clamp(14px, 1vw, 21px);
 }
 
@@ -52,7 +52,7 @@ main .musicPlayerContainer {
   height: 100vh;
   width: 100%;
   margin-inline: auto;
-  background-image: url("https://i.scdn.co/image/ab67616d0000b273af7e323ae057aa3ea6c67fa8");
+  background-image: url("https://lh3.googleusercontent.com/sP8UJCisHbLa3mRrPd11Pua_bQBBAveuQ1r29akH9eB4rU4tJOZITdPK9Vor5VouElLPPRvWWz4ZZVO2=w544-h544-l90-rj");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -61,17 +61,13 @@ main .musicPlayerContainer .container {
   padding: 1rem 3rem;
   -webkit-backdrop-filter: blur(10px);
           backdrop-filter: blur(10px);
-  background-color: rgba(1, 1, 1, 0.4);
+  background-color: rgba(0, 0, 0, 0.3);
   width: 100%;
   height: 100%;
   display: grid;
   grid-template-rows: 10% 75% 1fr;
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "header header" "cover playlist" "controls controls";
-}
-
-.playerControl {
-  border: 1px solid white;
 }
 
 .playerHeader {
@@ -83,8 +79,8 @@ main .musicPlayerContainer .container {
 }
 .playerHeader h1 {
   text-align: center;
-  font-size: 2.3rem;
-  color: var(--text);
+  font-size: 2.5rem;
+  color: var(--danger);
   -webkit-text-stroke: 1px var(--bg-dark);
   text-shadow: 1px 2px 1px var(--bg-dark);
   font-weight: 700;
@@ -105,6 +101,7 @@ main .musicPlayerContainer .container {
   align-items: center;
   margin-inline: auto;
   margin-inline-end: 100px;
+  box-shadow: 0 20px 60px oklch(0% 0 0deg / 0.6);
 }
 .playerCover .coverContainer img {
   height: 100%;
@@ -138,8 +135,8 @@ main .musicPlayerContainer .container {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 90%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 0%, black 90%, transparent);
 }
 
 .playlistTop .currentPlayDetail {
@@ -147,8 +144,13 @@ main .musicPlayerContainer .container {
   font-weight: 700;
   text-shadow: 2px 2px 5px var(--bg-dark);
 }
+.playlistTop .currentSong {
+  color: var(--danger);
+  text-shadow: 2px 2px 1px var(--bg-dark);
+}
 .playlistTop .totalSongs {
-  color: var(--text-muted);
+  color: var(--text);
+  opacity: 0.9;
   margin-top: 8px;
   text-shadow: 2px 2px 5px var(--bg-dark);
   font-size: 1rem;
@@ -171,6 +173,9 @@ main .musicPlayerContainer .container {
 .playlistBottom .playlistItem:last-child {
   border-bottom: 1px solid var(--text-muted);
 }
+.playlistBottom .playlistItem .count {
+  color: var(--danger);
+}
 .playlistBottom .playlistItem .songName {
   margin-left: 30px;
   width: -moz-fit-content;
@@ -178,11 +183,142 @@ main .musicPlayerContainer .container {
   margin-right: auto;
 }
 .playlistBottom .playlistItem:hover {
-  background-color: rgba(254, 254, 254, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
   border-top: 2px solid var(--text);
 }
 
 .playerControl {
   width: 100%;
+  height: 100%;
   grid-area: controls;
+}
+.playerControl .musicControl {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 70% 1fr;
+}
+.playerControl .musicControl .playPauseGroup {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.playerControl .musicControl .musicStatus {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-inline: 20px;
+  padding-top: 10px;
+}
+.playerControl .musicControl .volumeControl {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.playPauseGroup .control-btn {
+  font-size: 35px;
+  text-shadow: 3px 3px 1px var(--bg-dark);
+  transition: all 0.1s linear;
+  -webkit-text-stroke: 1px var(--bg-dark);
+}
+.playPauseGroup .control-btn:active {
+  transform: scale(0.9);
+  text-shadow: 0px 0px 0px var(--bg-dark);
+}
+.playPauseGroup .play {
+  font-size: 70px;
+}
+
+.musicStatus .musicStatusTop {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 1px var(--bg-dark);
+}
+.musicStatus .musicStatusTop .songName {
+  -webkit-text-stroke: 1px var(--bg-dark);
+  color: var(--danger);
+}
+.musicStatus .musicStatusTop .iconGroup {
+  display: flex;
+  gap: 15px;
+}
+.musicStatus .musicStatusMiddle {
+  box-shadow: 3px 3px 1px var(--bg-dark);
+  width: 100%;
+}
+.musicStatus .musicStatusBottom {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.iconGroup button {
+  transition: all 0.1s linear;
+}
+.iconGroup button:active {
+  transform: scale(0.9);
+  text-shadow: 0px 0px 0px var(--bg-dark);
+}
+
+.musicStatusMiddle .songBar {
+  height: 8px;
+  background-color: var(--text-muted);
+  cursor: pointer;
+  overflow: hidden;
+}
+.musicStatusMiddle .songBar .songProgress {
+  background-color: var(--primary);
+  height: 100%;
+  width: 50%;
+  cursor: pointer;
+}
+
+.musicStatusBottom {
+  text-shadow: 2px 2px 1px var(--bg-dark);
+  opacity: 0.9;
+}
+.musicStatusBottom .artistName {
+  color: var(--text);
+  font-weight: 700;
+}
+.musicStatusBottom .duration {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.volumeControl .volumeBtn {
+  text-shadow: 3px 3px 1px var(--bg-dark);
+  transition: all linear 0.1s;
+}
+.volumeControl .volumeBtn:active {
+  transform: scale(0.9);
+  text-shadow: 0px 0px 0px var(--bg-dark);
+}
+.volumeControl .volumeDown {
+  font-size: 30px;
+}
+.volumeControl .volumeUp {
+  font-size: 35px;
+}
+.volumeControl .volumeBar {
+  height: 6px;
+  box-shadow: 2px 2px 1px var(--bg-dark);
+  background-color: var(--text-muted);
+  overflow: hidden;
+  width: 55%;
+}
+.volumeControl .volumeBar .volumeLevel {
+  width: 75%;
+  background-color: var(--primary);
+  height: 100%;
 }/*# sourceMappingURL=style.css.map */
