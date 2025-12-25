@@ -255,7 +255,7 @@ function pauseSong() {
 }
 
 function setButtonDisabled(elem, isDisabled) {
-  elem.style.opacity = isDisabled ? "0.4" : 1;
+  elem.style.opacity = isDisabled ? "0.4" : "1";
   elem.style.pointerEvents = isDisabled ? "none" : "auto";
 }
 
@@ -272,28 +272,28 @@ function renderControls() {
   const liked = totalSongs[playerState.currentIndex].liked;
   likeBtnEl.style.color = liked ? "var(--danger)" : "var(--text)";
 
-  if (playerState.isLooped) {
-    setButtonDisabled(rewindBtnEl, false);
-    setButtonDisabled(forwardBtnEl, false);
-    return;
-  }
+  const rewindDisabled =
+    !playerState.isLooped &&
+    ((playerState.isShuffle &&
+      playerState.shufflePointer === 0 &&
+      audioEL.currentTime <= 1.5) ||
+      (!playerState.isShuffle &&
+        playerState.currentIndex === 0 &&
+        audioEL.currentTime <= 1.5));
 
-  if (playerState.isShuffle) {
-    const isFirstShuffle = playerState.shufflePointer === 0;
-    const isLastShuffle =
-      playerState.shufflePointer === playerState.shuffleOrder.length - 1;
-    setButtonDisabled(
-      rewindBtnEl,
-      isFirstShuffle && audioEL.currentTime <= 1.5
-    );
-    setButtonDisabled(forwardBtnEl, isLastShuffle);
-    return;
-  }
+  const forwardDisabled =
+    !playerState.isLooped &&
+    ((playerState.isShuffle &&
+      playerState.shufflePointer === playerState.shuffleOrder.length - 1) ||
+      (!playerState.isShuffle &&
+        playerState.currentIndex === totalSongs.length - 1));
 
-  const isFirst = playerState.currentIndex === 0;
-  const isLast = playerState.currentIndex === totalSongs.length - 1;
-  setButtonDisabled(rewindBtnEl, isFirst && audioEL.currentTime <= 1.5);
-  setButtonDisabled(forwardBtnEl, isLast);
+  setButtonDisabled(rewindBtnEl, rewindDisabled);
+  setButtonDisabled(forwardBtnEl, forwardDisabled);
+
+  playBtnEl.innerHTML = playerState.isPlaying
+    ? `<i class="ri-pause-large-fill"></i>`
+    : `<i class="ri-play-large-fill"></i>`;
 }
 
 playlistBottomEl.addEventListener("click", function (elem) {
@@ -306,25 +306,57 @@ playlistBottomEl.addEventListener("click", function (elem) {
 });
 
 function nextSong() {
-  let nextIndex = playerState.currentIndex + 1;
+  if (playerState.isShuffle) {
+    if (
+      !playerState.isLooped &&
+      playerState.shufflePointer === playerState.shuffleOrder.length - 1
+    )
+      return;
 
-  if (nextIndex >= totalSongs.length) {
-    if (!playerState.isLooped) return;
-    nextIndex = 0;
+    playerState.shufflePointer =
+      playerState.shufflePointer === playerState.shuffleOrder.length - 1
+        ? 0
+        : playerState.shufflePointer + 1;
+
+    loadSong(playerState.shuffleOrder[playerState.shufflePointer]);
+  } else {
+    if (
+      !playerState.isLooped &&
+      playerState.currentIndex === totalSongs.length - 1
+    )
+      return;
+
+    const nextIndex =
+      playerState.currentIndex === totalSongs.length - 1
+        ? 0
+        : playerState.currentIndex + 1;
+
+    loadSong(nextIndex);
   }
 
-  loadSong(nextIndex);
   playSong();
 }
 
 function prevSong() {
-  let prevIndex = playerState.currentIndex - 1;
-
-  if (prevIndex < 0) {
-    if (!playerState.isLooped) return;
-    prevIndex = totalSongs.length - 1;
+  if (audioEL.currentTime > 1.5) {
+    audioEL.currentTime = 0;
+    return;
   }
-  loadSong(prevIndex);
+  if (playerState.isShuffle) {
+    if (!playerState.isLooped && playerState.shufflePointer === 0) return;
+    playerState.shufflePointer =
+      playerState.shufflePointer === 0
+        ? playerState.shuffleOrder.length - 1
+        : playerState.shufflePointer - 1;
+    loadSong(playerState.shuffleOrder[playerState.shufflePointer]);
+  } else {
+    if (!playerState.isLooped && playerState.currentIndex === 0) return;
+    const nextIndex =
+      playerState.currentIndex === 0
+        ? totalSongs.length - 1
+        : playerState.currentIndex - 1;
+    loadSong(nextIndex);
+  }
   playSong();
 }
 
@@ -341,36 +373,8 @@ function generateShuffleOrder(startIndex = playerState.currentIndex) {
   renderControls();
 }
 
-function nextShuffleSong() {
-  playerState.shufflePointer++;
-  if (playerState.shufflePointer >= playerState.shuffleOrder.length) {
-    if (!playerState.isLooped) return;
-    playerState.shufflePointer = 0;
-  }
-
-  loadSong(playerState.shuffleOrder[playerState.shufflePointer]);
-  playSong();
-}
-
-function prevShuffleSong() {
-  if (!playerState.isLooped && playerState.shufflePointer === 0) return;
-  if (audioEL.currentTime > 1.5) {
-    audioEL.currentTime = 0;
-    return;
-  }
-  playerState.shufflePointer--;
-  if (playerState.shufflePointer < 0) {
-    if (!playerState.isLooped) return;
-    playerState.shufflePointer = playerState.shuffleOrder.length - 1;
-  }
-
-  loadSong(playerState.shuffleOrder[playerState.shufflePointer]);
-  playSong();
-}
-
 shuffleBtnEl.addEventListener("click", function () {
   playerState.isShuffle = !playerState.isShuffle;
-
   if (playerState.isShuffle) generateShuffleOrder(playerState.currentIndex);
   renderControls();
 });
@@ -391,42 +395,19 @@ audioEL.addEventListener("ended", function () {
   renderControls();
 });
 
+audioEL.addEventListener("timeupdate", renderControls);
+
 playBtnEl.addEventListener("click", function () {
   playerState.isPlaying ? pauseSong() : playSong();
+  renderControls();
 });
 
 rewindBtnEl.addEventListener("click", function () {
-  if (!canGoPrev()) return;
-  playerState.isShuffle ? prevShuffleSong() : prevSong();
+  prevSong();
+  renderControls();
 });
 
 forwardBtnEl.addEventListener("click", function () {
-  if (!canGoNext()) return;
-  playerState.isShuffle ? nextShuffleSong() : nextSong();
+  nextSong();
+  renderControls();
 });
-
-function canGoPrev() {
-  if (playerState.isLooped) return true;
-  if (playerState.isShuffle) {
-    if (playerState.shufflePointer === 0 && audioEL.currentTime <= 1.5) {
-      return false;
-    }
-    return true;
-  }
-
-  if (playerState.currentIndex === 0 && audioEL.currentTime <= 1.5) {
-    return false;
-  }
-
-  return true;
-}
-
-function canGoNext() {
-  if (playerState.isLooped) return true;
-
-  if (playerState.isShuffle) {
-    return playerState.shufflePointer < playerState.shuffleOrder.length - 1;
-  }
-
-  return playerState.currentIndex < totalSongs.length - 1;
-}
