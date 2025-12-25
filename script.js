@@ -318,10 +318,6 @@ function nextSong() {
 }
 
 function prevSong() {
-  if (audioEL.currentTime > 1.5) {
-    audioEL.currentTime = 0;
-    return;
-  }
   let prevIndex = playerState.currentIndex - 1;
 
   if (prevIndex < 0) {
@@ -342,6 +338,7 @@ function generateShuffleOrder(startIndex = playerState.currentIndex) {
   [order[0], order[startPos]] = [order[startPos], order[0]];
   playerState.shuffleOrder = order;
   playerState.shufflePointer = 0;
+  renderControls();
 }
 
 function nextShuffleSong() {
@@ -356,6 +353,7 @@ function nextShuffleSong() {
 }
 
 function prevShuffleSong() {
+  if (!playerState.isLooped && playerState.shufflePointer === 0) return;
   if (audioEL.currentTime > 1.5) {
     audioEL.currentTime = 0;
     return;
@@ -373,7 +371,7 @@ function prevShuffleSong() {
 shuffleBtnEl.addEventListener("click", function () {
   playerState.isShuffle = !playerState.isShuffle;
 
-  if (playerState.isShuffle) generateShuffleOrder();
+  if (playerState.isShuffle) generateShuffleOrder(playerState.currentIndex);
   renderControls();
 });
 
@@ -398,9 +396,37 @@ playBtnEl.addEventListener("click", function () {
 });
 
 rewindBtnEl.addEventListener("click", function () {
+  if (!canGoPrev()) return;
   playerState.isShuffle ? prevShuffleSong() : prevSong();
 });
 
 forwardBtnEl.addEventListener("click", function () {
+  if (!canGoNext()) return;
   playerState.isShuffle ? nextShuffleSong() : nextSong();
 });
+
+function canGoPrev() {
+  if (playerState.isLooped) return true;
+  if (playerState.isShuffle) {
+    if (playerState.shufflePointer === 0 && audioEL.currentTime <= 1.5) {
+      return false;
+    }
+    return true;
+  }
+
+  if (playerState.currentIndex === 0 && audioEL.currentTime <= 1.5) {
+    return false;
+  }
+
+  return true;
+}
+
+function canGoNext() {
+  if (playerState.isLooped) return true;
+
+  if (playerState.isShuffle) {
+    return playerState.shufflePointer < playerState.shuffleOrder.length - 1;
+  }
+
+  return playerState.currentIndex < totalSongs.length - 1;
+}

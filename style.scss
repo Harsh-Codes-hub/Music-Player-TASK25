@@ -189,9 +189,10 @@ main {
 
 .playlistBottom {
   padding-block: 10px;
-
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
   .playlistItem {
-    border-top: 2px solid var(--text-muted);
+    border-top: 1px solid var(--text-muted);
     width: 98%;
     padding: 15px;
     font-size: clamp(0.8rem, 1rem, 1.3rem);
@@ -220,7 +221,7 @@ main {
 
     &:hover {
       background-color: rgba(0, 0, 0, .5);
-      border-top: 2px solid var(--text);
+      border-top: 1px solid var(--text);
     }
   }
 }
