@@ -103,6 +103,7 @@ const playerState = {
   isPlaying: false,
   isShuffle: false,
   isLooped: false,
+  shuffleOrder: [],
   shufflePointer: 0,
   volume: 1,
   lastVolume: 1,
@@ -175,8 +176,8 @@ function getDominantColor(songCover) {
 
   return {
     r: Math.floor(r / count),
-    g: Math.floor(r / count),
-    b: Math.floor(r / count),
+    g: Math.floor(g / count),
+    b: Math.floor(b / count),
   };
 }
 
@@ -192,7 +193,6 @@ function renderPlaylist() {
         <span class="duration">${obj.duration}</span>
         </li>
         `;
-    console.log(playerState.currentIndex, idx);
   });
   playlistBottomEl.innerHTML = clutter;
   const currentSong = totalSongs[playerState.currentIndex];
@@ -202,16 +202,16 @@ function renderPlaylist() {
   playListTopEl.querySelector(
     ".totalSongs"
   ).innerHTML = `${totalSongs.length} Songs`;
-
-  setTimeout(function () {
-    const activeEl = playlistBottomEl.querySelector(".playlistItem.active");
-    if (activeEl) {
-      Object.assign(activeEl.style, {
-        backgroundImage: `linear-gradient(to left, transparent 0%, rgba(${playerState.currentColor.r}, ${playerState.currentColor.g}, ${playerState.currentColor.b}, 0.9) 5%, rgba(0, 0, 0, 0.5) 95%, transparent 100%)`,
-      });
-      activeEl.querySelector(".name").style.color = "var(--danger)";
-    }
-  }, 10);
+  const activeEl = playlistBottomEl.querySelector(".playlistItem.active");
+  if (activeEl) {
+    Object.assign(activeEl.style, {
+      backgroundImage: `linear-gradient(to left, transparent 0%, rgba(${playerState.currentColor.r}, ${playerState.currentColor.g}, ${playerState.currentColor.b}, 0.9) 15%, rgba(0, 0, 0, 0.5) 85%, transparent 100%)`,
+    });
+    activeEl.querySelector(".name").style.color = "var(--danger)";
+    activeEl.querySelector(
+      ".count"
+    ).innerHTML = `<i class="ri-bar-chart-fill"></i>`;
+  }
 }
 
 function renderSongUI() {
@@ -229,5 +229,178 @@ function renderSongUI() {
   };
   musicPlayerContainerEl.style.backgroundImage = `url("${currentSong.cover}")`;
 }
-renderSongUI();
 renderPlaylist();
+renderSongUI();
+function loadSong(index) {
+  if (index < 0 || index >= totalSongs.length) return;
+  playerState.currentIndex = index;
+  audioEL.src = totalSongs[index].src;
+  renderSongUI();
+  renderControls();
+}
+loadSong(0);
+
+function playSong() {
+  setTimeout(() => {
+    audioEL.play();
+  }, 500);
+  playerState.isPlaying = true;
+  renderControls();
+}
+
+function pauseSong() {
+  audioEL.pause();
+  playerState.isPlaying = false;
+  renderControls();
+}
+
+function setButtonDisabled(elem, isDisabled) {
+  elem.style.opacity = isDisabled ? "0.4" : 1;
+  elem.style.pointerEvents = isDisabled ? "none" : "auto";
+}
+
+function renderControls() {
+  playBtnEl.innerHTML = playerState.isPlaying
+    ? `<i class="ri-pause-large-fill"></i>`
+    : `<i class="ri-play-large-fill"></i>`;
+  loopBtnEl.style.color = playerState.isLooped
+    ? "var(--danger)"
+    : "var(--text)";
+  shuffleBtnEl.style.color = playerState.isShuffle
+    ? "var(--danger)"
+    : "var(--text)";
+  const liked = totalSongs[playerState.currentIndex].liked;
+  likeBtnEl.style.color = liked ? "var(--danger)" : "var(--text)";
+
+  if (playerState.isLooped) {
+    setButtonDisabled(rewindBtnEl, false);
+    setButtonDisabled(forwardBtnEl, false);
+    return;
+  }
+
+  if (playerState.isShuffle) {
+    const isFirstShuffle = playerState.shufflePointer === 0;
+    const isLastShuffle =
+      playerState.shufflePointer === playerState.shuffleOrder.length - 1;
+    setButtonDisabled(
+      rewindBtnEl,
+      isFirstShuffle && audioEL.currentTime <= 1.5
+    );
+    setButtonDisabled(forwardBtnEl, isLastShuffle);
+    return;
+  }
+
+  const isFirst = playerState.currentIndex === 0;
+  const isLast = playerState.currentIndex === totalSongs.length - 1;
+  setButtonDisabled(rewindBtnEl, isFirst && audioEL.currentTime <= 1.5);
+  setButtonDisabled(forwardBtnEl, isLast);
+}
+
+playlistBottomEl.addEventListener("click", function (elem) {
+  const item = elem.target.closest(".playlistItem");
+  if (!item) return;
+  const index = Number(item.dataset.index);
+  loadSong(index);
+  if (playerState.isShuffle) generateShuffleOrder(index);
+  playSong();
+});
+
+function nextSong() {
+  let nextIndex = playerState.currentIndex + 1;
+
+  if (nextIndex >= totalSongs.length) {
+    if (!playerState.isLooped) return;
+    nextIndex = 0;
+  }
+
+  loadSong(nextIndex);
+  playSong();
+}
+
+function prevSong() {
+  if (audioEL.currentTime > 1.5) {
+    audioEL.currentTime = 0;
+    return;
+  }
+  let prevIndex = playerState.currentIndex - 1;
+
+  if (prevIndex < 0) {
+    if (!playerState.isLooped) return;
+    prevIndex = totalSongs.length - 1;
+  }
+  loadSong(prevIndex);
+  playSong();
+}
+
+function generateShuffleOrder(startIndex = playerState.currentIndex) {
+  const order = totalSongs.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  const startPos = order.indexOf(startIndex);
+  [order[0], order[startPos]] = [order[startPos], order[0]];
+  playerState.shuffleOrder = order;
+  playerState.shufflePointer = 0;
+}
+
+function nextShuffleSong() {
+  playerState.shufflePointer++;
+  if (playerState.shufflePointer >= playerState.shuffleOrder.length) {
+    if (!playerState.isLooped) return;
+    playerState.shufflePointer = 0;
+  }
+
+  loadSong(playerState.shuffleOrder[playerState.shufflePointer]);
+  playSong();
+}
+
+function prevShuffleSong() {
+  if (audioEL.currentTime > 1.5) {
+    audioEL.currentTime = 0;
+    return;
+  }
+  playerState.shufflePointer--;
+  if (playerState.shufflePointer < 0) {
+    if (!playerState.isLooped) return;
+    playerState.shufflePointer = playerState.shuffleOrder.length - 1;
+  }
+
+  loadSong(playerState.shuffleOrder[playerState.shufflePointer]);
+  playSong();
+}
+
+shuffleBtnEl.addEventListener("click", function () {
+  playerState.isShuffle = !playerState.isShuffle;
+
+  if (playerState.isShuffle) generateShuffleOrder();
+  renderControls();
+});
+
+loopBtnEl.addEventListener("click", function () {
+  playerState.isLooped = !playerState.isLooped;
+  renderControls();
+});
+
+likeBtnEl.addEventListener("click", function () {
+  const song = totalSongs[playerState.currentIndex];
+  song.liked = !song.liked;
+  renderControls();
+});
+
+audioEL.addEventListener("ended", function () {
+  playerState.isShuffle ? nextShuffleSong() : nextSong();
+  renderControls();
+});
+
+playBtnEl.addEventListener("click", function () {
+  playerState.isPlaying ? pauseSong() : playSong();
+});
+
+rewindBtnEl.addEventListener("click", function () {
+  playerState.isShuffle ? prevShuffleSong() : prevSong();
+});
+
+forwardBtnEl.addEventListener("click", function () {
+  playerState.isShuffle ? nextShuffleSong() : nextSong();
+});

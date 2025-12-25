@@ -96,8 +96,9 @@ main .musicPlayerContainer .container {
   padding-block: 1rem;
 }
 .playerCover .coverContainer {
-  height: 650px;
-  width: 650px;
+  height: 100%;
+  min-height: 650px;
+  aspect-ratio: 1/1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -237,7 +238,9 @@ main .musicPlayerContainer .container {
   text-shadow: 0px 0px 0px var(--bg-dark);
 }
 .playPauseGroup .play {
+  text-shadow: 5px 5px 1px var(--bg-dark);
   font-size: 70px;
+  -webkit-text-stroke: 5px var(--text);
 }
 
 .musicStatus .musicStatusTop {
@@ -270,10 +273,14 @@ main .musicPlayerContainer .container {
 
 .iconGroup button {
   transition: all 0.1s linear;
+  color: var(--text);
 }
 .iconGroup button:active {
   transform: scale(0.9);
   text-shadow: 0px 0px 0px var(--bg-dark);
+}
+.iconGroup button i {
+  color: inherit;
 }
 
 .musicStatusMiddle .songBar {
@@ -285,7 +292,7 @@ main .musicPlayerContainer .container {
 .musicStatusMiddle .songBar .songProgress {
   background-color: var(--danger);
   height: 100%;
-  width: 50%;
+  width: 0%;
   cursor: pointer;
 }
 
@@ -325,7 +332,7 @@ main .musicPlayerContainer .container {
   cursor: pointer;
 }
 .volumeControl .volumeBar .volumeLevel {
-  width: 75%;
+  width: 0%;
   background-color: var(--danger);
   height: 100%;
   cursor: pointer;
@@ -337,4 +344,7 @@ main .musicPlayerContainer .container {
 
 .active {
   transition: all 0.1s linear;
+}
+.active i {
+  color: var(--danger);
 }/*# sourceMappingURL=style.css.map */

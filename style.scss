@@ -101,8 +101,10 @@ main {
   height: 100%;
   padding-block: 1rem;
   .coverContainer {
-    height: 650px;
-    width: 650px;
+    height: 100%;
+    min-height: 650px;
+
+    aspect-ratio: 1/1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -268,7 +270,9 @@ main {
   }
 
   .play {
+    text-shadow: 5px 5px 1px var(--bg-dark);
     font-size: 70px;
+    -webkit-text-stroke: 5px var(--text);
   }
 }
 
@@ -309,9 +313,13 @@ main {
 .iconGroup {
   button {
     transition: all 0.1s linear;
+    color: var(--text);
     &:active {
       transform: scale(0.9);
       text-shadow: 0px 0px 0px var(--bg-dark);
+    }
+    i {
+      color: inherit;
     }
   }
 }
@@ -326,7 +334,7 @@ main {
     .songProgress {
       background-color: var(--danger);
       height: 100%;
-      width: 50%;
+      width: 0%;
       cursor: pointer;
     }
   }
@@ -372,7 +380,7 @@ main {
     cursor: pointer;
     
     .volumeLevel {
-      width: 75%;
+      width: 0%;
       background-color: var(--danger);
       height: 100%;
       cursor: pointer;
@@ -385,4 +393,7 @@ main {
 }
 .active {
   transition: all .1s linear;
+  i {
+    color: var(--danger);
+  }
 }
