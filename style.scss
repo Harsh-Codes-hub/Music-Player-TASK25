@@ -46,6 +46,10 @@ body {
   background-color: var(--bg-dark);
 }
 
+i {
+  pointer-events: none;
+}
+
 main {
   width: 100%;
 
@@ -61,7 +65,7 @@ main {
     .container {
       padding: 1rem 3rem;
       backdrop-filter: blur(10px);
-      background-color: rgba(218, 41, 28, 0.2);
+      background-color: rgba(218, 41, 28, 0.3);
       width: 100%;
       height: 100%;
       display: grid;
@@ -84,9 +88,8 @@ main {
 
   h1 {
     text-align: center;
-    font-size: clamp(1.9rem, 2.5rem, 2.7rem);
+    font-size: clamp(1.7rem, 2.3rem, 2.5rem);
     color: var(--danger);
-    // -webkit-text-stroke: 1px var(--bg-dark);
     text-shadow: 2px 2px 1px var(--bg-dark);
     font-weight: 700;
   }
@@ -98,16 +101,18 @@ main {
   height: 100%;
   padding-block: 1rem;
   .coverContainer {
-    width: fit-content;
-    height: 100%;
+    height: 650px;
+    width: 650px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-inline: auto;
     margin-inline-end: 100px;
     box-shadow: 0 20px 60px oklch(0% 0 0 / 0.6);
+    overflow: hidden;
     img {
       height: 100%;
+      object-fit: cover;
     }
   }
 }
@@ -132,7 +137,6 @@ main {
     }
 
     .playlistBottom {
-      height: max-content;
       list-style-type: none;
       display: flex;
       justify-content: flex-start;
@@ -189,27 +193,31 @@ main {
     width: 98%;
     padding: 15px;
     font-size: clamp(0.8rem, 1rem, 1.3rem);
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 5% 1fr 5%;
     font-weight: 700;
     transition: background-color linear 0.5s, border-top linear 0.3s;
-
+    cursor: pointer;
     &:last-child {
       border-bottom: 1px solid var(--text-muted);
+    }
+
+    .count, .name, .duration {
+      pointer-events: none;
     }
 
     .count {
       color: var(--danger);
     }
-
-    .songName {
+    
+    .name {
       margin-left: 30px;
       width: fit-content;
       margin-right: auto;
     }
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(0, 0, 0, .5);
       border-top: 2px solid var(--text);
     }
   }
@@ -325,14 +333,14 @@ main {
 }
 
 .musicStatusBottom {
-  text-shadow: 2px 2px 1px var(--bg-dark);
+  text-shadow: 1px 1px 1px var(--bg-dark), -1px -1px 5px var(--bg-dark);
   opacity: 0.9;
   .artistName {
     color: var(--text);
     font-weight: 700;
   }
 
-  .duration {
+  .songDuration {
     color: var(--text);
     font-weight: 700;
   }
@@ -361,15 +369,20 @@ main {
     background-color: var(--text-muted);
     overflow: hidden;
     width: 55%;
-
+    cursor: pointer;
+    
     .volumeLevel {
       width: 75%;
       background-color: var(--danger);
       height: 100%;
+      cursor: pointer;
     }
   }
 }
 
 #audio {
-  display: hidden;
+  display: none;
+}
+.active {
+  transition: all .1s linear;
 }

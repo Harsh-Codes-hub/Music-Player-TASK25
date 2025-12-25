@@ -45,6 +45,10 @@ body {
   background-color: var(--bg-dark);
 }
 
+i {
+  pointer-events: none;
+}
+
 main {
   width: 100%;
 }
@@ -61,7 +65,7 @@ main .musicPlayerContainer .container {
   padding: 1rem 3rem;
   -webkit-backdrop-filter: blur(10px);
           backdrop-filter: blur(10px);
-  background-color: rgba(218, 41, 28, 0.2);
+  background-color: rgba(218, 41, 28, 0.3);
   width: 100%;
   height: 100%;
   display: grid;
@@ -79,7 +83,7 @@ main .musicPlayerContainer .container {
 }
 .playerHeader h1 {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 2.3rem;
   color: var(--danger);
   text-shadow: 2px 2px 1px var(--bg-dark);
   font-weight: 700;
@@ -92,18 +96,20 @@ main .musicPlayerContainer .container {
   padding-block: 1rem;
 }
 .playerCover .coverContainer {
-  width: -moz-fit-content;
-  width: fit-content;
-  height: 100%;
+  height: 650px;
+  width: 650px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-inline: auto;
   margin-inline-end: 100px;
   box-shadow: 0 20px 60px oklch(0% 0 0deg / 0.6);
+  overflow: hidden;
 }
 .playerCover .coverContainer img {
   height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .playerPLaylist {
@@ -125,8 +131,6 @@ main .musicPlayerContainer .container {
   padding-bottom: 10px;
 }
 .playerPLaylist .playlistContainer .playlistBottom {
-  height: -moz-max-content;
-  height: max-content;
   list-style-type: none;
   display: flex;
   justify-content: flex-start;
@@ -164,25 +168,29 @@ main .musicPlayerContainer .container {
   width: 98%;
   padding: 15px;
   font-size: 1rem;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 5% 1fr 5%;
   font-weight: 700;
   transition: background-color linear 0.5s, border-top linear 0.3s;
+  cursor: pointer;
 }
 .playlistBottom .playlistItem:last-child {
   border-bottom: 1px solid var(--text-muted);
 }
+.playlistBottom .playlistItem .count, .playlistBottom .playlistItem .name, .playlistBottom .playlistItem .duration {
+  pointer-events: none;
+}
 .playlistBottom .playlistItem .count {
   color: var(--danger);
 }
-.playlistBottom .playlistItem .songName {
+.playlistBottom .playlistItem .name {
   margin-left: 30px;
   width: -moz-fit-content;
   width: fit-content;
   margin-right: auto;
 }
 .playlistBottom .playlistItem:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.5);
   border-top: 2px solid var(--text);
 }
 
@@ -282,14 +290,14 @@ main .musicPlayerContainer .container {
 }
 
 .musicStatusBottom {
-  text-shadow: 2px 2px 1px var(--bg-dark);
+  text-shadow: 1px 1px 1px var(--bg-dark), -1px -1px 5px var(--bg-dark);
   opacity: 0.9;
 }
 .musicStatusBottom .artistName {
   color: var(--text);
   font-weight: 700;
 }
-.musicStatusBottom .duration {
+.musicStatusBottom .songDuration {
   color: var(--text);
   font-weight: 700;
 }
@@ -314,13 +322,19 @@ main .musicPlayerContainer .container {
   background-color: var(--text-muted);
   overflow: hidden;
   width: 55%;
+  cursor: pointer;
 }
 .volumeControl .volumeBar .volumeLevel {
   width: 75%;
   background-color: var(--danger);
   height: 100%;
+  cursor: pointer;
 }
 
 #audio {
-  display: hidden;
+  display: none;
+}
+
+.active {
+  transition: all 0.1s linear;
 }/*# sourceMappingURL=style.css.map */
