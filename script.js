@@ -97,6 +97,7 @@ const totalSongs = [
     liked: false,
   },
 ];
+
 // playerState
 const playerState = {
   currentIndex: 0,
@@ -109,7 +110,10 @@ const playerState = {
   lastVolume: 1,
   isMute: false,
   currentColor: { r: 218, g: 41, b: 28 }, // default red
+  isSeeking: false,
+  isVolumeDragging: false,
 };
+
 // audio element
 const audioEL = document.querySelector("#audio");
 // musicPlayerContainer will be used to change background image to cover
@@ -231,6 +235,14 @@ function renderSongUI() {
 }
 renderPlaylist();
 renderSongUI();
+
+function initVolume() {
+  audioEL.volume = playerState.volume;
+  volumeLevelEl.style.width = `${playerState.volume * 100}%`;
+}
+
+initVolume();
+
 function loadSong(index) {
   if (index < 0 || index >= totalSongs.length) return;
   playerState.currentIndex = index;
@@ -271,6 +283,11 @@ function renderControls() {
     : "var(--text)";
   const liked = totalSongs[playerState.currentIndex].liked;
   likeBtnEl.style.color = liked ? "var(--danger)" : "var(--text)";
+
+  volumeDownBtnEl.innerHTML =
+    playerState.isMute || playerState.volume === 0
+      ? `<i class="ri-volume-mute-fill"></i>`
+      : `<i class="ri-volume-down-fill"></i>`;
 
   const rewindDisabled =
     !playerState.isLooped &&
@@ -391,11 +408,16 @@ likeBtnEl.addEventListener("click", function () {
 });
 
 audioEL.addEventListener("ended", function () {
-  playerState.isShuffle ? nextShuffleSong() : nextSong();
+  nextSong();
   renderControls();
 });
 
-audioEL.addEventListener("timeupdate", renderControls);
+audioEL.addEventListener("timeupdate", function () {
+  if (!audioEL.duration) return;
+  const percent = (audioEL.currentTime / audioEL.duration) * 100;
+  songProgressEl.style.width = `${percent}%`;
+  renderControls();
+});
 
 playBtnEl.addEventListener("click", function () {
   playerState.isPlaying ? pauseSong() : playSong();
@@ -409,5 +431,100 @@ rewindBtnEl.addEventListener("click", function () {
 
 forwardBtnEl.addEventListener("click", function () {
   nextSong();
+  renderControls();
+});
+
+songBarEl.addEventListener("click", function (elem) {
+  if (!audioEL.duration) return;
+  const rect = songBarEl.getBoundingClientRect();
+  const clickX = elem.clientX - rect.left;
+  const percent = clickX / rect.width;
+  audioEL.currentTime = percent * audioEL.duration;
+  renderControls();
+});
+
+songBarEl.addEventListener("mousedown", function () {
+  playerState.isSeeking = true;
+  renderControls();
+});
+
+document.addEventListener("mouseup", function () {
+  playerState.isSeeking = false;
+  playerState.isVolumeDragging = false;
+  renderControls();
+});
+
+document.addEventListener("mousemove", function (elem) {
+  if (playerState.isSeeking && audioEL.duration) {
+    const rect = songBarEl.getBoundingClientRect();
+    const moveX = Math.max(0, Math.min(elem.clientX - rect.left, rect.width));
+    const percent = moveX / rect.width;
+    audioEL.currentTime = percent * audioEL.duration;
+    return; // 🔑 stop here
+  }
+  if (playerState.isVolumeDragging) {
+    const rect = volumeBarEl.getBoundingClientRect();
+    const moveX = Math.max(0, Math.min(elem.clientX - rect.left, rect.width));
+    const percent = moveX / rect.width;
+    applyVolume(percent);
+  }
+  renderControls();
+});
+
+function applyVolume(vol) {
+  vol = Math.max(0, Math.min(vol, 1));
+  audioEL.volume = vol;
+  playerState.volume = vol;
+  volumeLevelEl.style.width = `${vol * 100}%`;
+  if (vol === 0) {
+    playerState.isMute = true;
+  } else {
+    playerState.isMute = false;
+    playerState.lastVolume = vol;
+  }
+  renderControls();
+}
+
+volumeDownBtnEl.addEventListener("click", function () {
+  if (playerState.isMute) {
+    applyVolume(playerState.lastVolume);
+    return;
+  }
+  applyVolume(playerState.volume - 0.1);
+  renderControls();
+});
+
+volumeUpBtnEl.addEventListener("click", function () {
+  if (playerState.isMute) {
+    applyVolume(playerState.lastVolume || 0.5);
+  } else {
+    applyVolume(Math.min(playerState.volume + 0.1, 1));
+  }
+  renderControls();
+});
+
+volumeDownBtnEl.addEventListener("dblclick", function () {
+  if (!playerState.isMute) {
+    playerState.lastVolume = playerState.volume;
+    applyVolume(0);
+  } else {
+    applyVolume(playerState.lastVolume || 0.5);
+  }
+  renderControls();
+});
+
+volumeBarEl.addEventListener("click", function (elem) {
+  const rect = volumeBarEl.getBoundingClientRect();
+  const percent = (elem.clickX - rect.left) / rect.width;
+  applyVolume(percent);
+  renderControls();
+});
+
+volumeBarEl.addEventListener("mousedown", function (elem) {
+  playerState.isVolumeDragging = true;
+  const rect = volumeBarEl.getBoundingClientRect();
+  const moveX = Math.max(0, Math.min(elem.clientX - rect.left, rect.width));
+  const percent = moveX / rect.width;
+  applyVolume(percent);
   renderControls();
 });

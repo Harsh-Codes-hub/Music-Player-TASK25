@@ -1,7 +1,3 @@
-@font-face {
-  font-family: Inter;
-  src: url("./fonts/Inter-VariableFont_opsz,wght.woff2");
-}
 :root {
   --bg-dark: oklch(0.1 0 20);
   --bg: oklch(0.15 0 20);
@@ -18,18 +14,20 @@
   --success: oklch(0.7 0.2 160);
   --info: oklch(0.7 0.2 260);
   font-size: clamp(14px, 1vw, 21px);
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: var(--text);
 }
 
 html,
 body {
+  font-family: var(--font-ui);
   height: 100%;
   width: 100%;
 }
@@ -39,6 +37,14 @@ button {
   cursor: pointer;
   width: -moz-fit-content;
   width: fit-content;
+  transition: transform 0.15s ease, text-shadow 0.15s ease, opacity 0.2s ease;
+}
+button:hover {
+  transform: scale(1.35);
+}
+button:active {
+  transform: scale(0.94);
+  text-shadow: 0px 0px 0px var(--bg-dark);
 }
 
 body {
@@ -86,7 +92,9 @@ main .musicPlayerContainer .container {
   font-size: 2.3rem;
   color: var(--danger);
   text-shadow: 2px 2px 1px var(--bg-dark);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 .playerCover {
@@ -129,7 +137,7 @@ main .musicPlayerContainer .container {
   justify-content: space-evenly;
   align-items: flex-start;
   flex-direction: column;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 .playerPLaylist .playlistContainer .playlistBottom {
   list-style-type: none;
@@ -148,13 +156,18 @@ main .musicPlayerContainer .container {
   font-weight: 700;
   text-shadow: 2px 2px 5px var(--bg-dark);
 }
+.playlistTop .currentArtist {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
 .playlistTop .currentSong {
   color: var(--danger);
   text-shadow: 2px 2px 1px var(--bg-dark);
+  margin-bottom: 5px;
 }
 .playlistTop .totalSongs {
   color: var(--text);
-  opacity: 0.9;
+  opacity: 0.7;
   margin-top: 8px;
   text-shadow: 2px 2px 5px var(--bg-dark);
   font-size: 1rem;
@@ -180,7 +193,9 @@ main .musicPlayerContainer .container {
 .playlistBottom .playlistItem:last-child {
   border-bottom: 1px solid var(--text-muted);
 }
-.playlistBottom .playlistItem .count, .playlistBottom .playlistItem .name, .playlistBottom .playlistItem .duration {
+.playlistBottom .playlistItem .count,
+.playlistBottom .playlistItem .name,
+.playlistBottom .playlistItem .duration {
   pointer-events: none;
 }
 .playlistBottom .playlistItem .count {
@@ -230,19 +245,17 @@ main .musicPlayerContainer .container {
 }
 
 .playPauseGroup .control-btn {
-  font-size: 35px;
+  font-size: 40px;
   text-shadow: 3px 3px 1px var(--bg-dark);
-  transition: all 0.1s linear;
   -webkit-text-stroke: 1px var(--bg-dark);
-}
-.playPauseGroup .control-btn:active {
-  transform: scale(0.9);
-  text-shadow: 0px 0px 0px var(--bg-dark);
 }
 .playPauseGroup .play {
   text-shadow: 5px 5px 1px var(--bg-dark);
-  font-size: 70px;
+  font-size: 75px;
   -webkit-text-stroke: 5px var(--text);
+}
+.playPauseGroup .play i {
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
 .musicStatus .musicStatusTop {
@@ -251,7 +264,9 @@ main .musicPlayerContainer .container {
   justify-content: space-between;
   align-items: center;
   font-size: 1.3rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.2px;
   text-shadow: 2px 2px 1px var(--bg-dark);
 }
 .musicStatus .musicStatusTop .songName {
@@ -274,12 +289,13 @@ main .musicPlayerContainer .container {
 }
 
 .iconGroup button {
-  transition: all 0.1s linear;
   color: var(--text);
+  text-shadow: 2px 2px 1px var(--bg-dark);
+  transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
 }
 .iconGroup button:active {
-  transform: scale(0.9);
-  text-shadow: 0px 0px 0px var(--bg-dark);
+  transform: scale(1.25);
+  text-shadow: 0 0 0 var(--bg-dark);
 }
 .iconGroup button i {
   color: inherit;
@@ -291,11 +307,13 @@ main .musicPlayerContainer .container {
   cursor: pointer;
   overflow: hidden;
 }
+.musicStatusMiddle .songBar:active {
+  cursor: grabbing;
+}
 .musicStatusMiddle .songBar .songProgress {
   background-color: var(--danger);
   height: 100%;
   width: 0%;
-  cursor: pointer;
 }
 
 .musicStatusBottom {
@@ -305,6 +323,8 @@ main .musicPlayerContainer .container {
 .musicStatusBottom .artistName {
   color: var(--text);
   font-weight: 700;
+  font-size: 0.9rem;
+  opacity: 0.7;
 }
 .musicStatusBottom .songDuration {
   color: var(--text);
@@ -313,11 +333,6 @@ main .musicPlayerContainer .container {
 
 .volumeControl .volumeBtn {
   text-shadow: 3px 3px 1px var(--bg-dark);
-  transition: all linear 0.1s;
-}
-.volumeControl .volumeBtn:active {
-  transform: scale(0.9);
-  text-shadow: 0px 0px 0px var(--bg-dark);
 }
 .volumeControl .volumeDown {
   font-size: 30px;
@@ -333,20 +348,29 @@ main .musicPlayerContainer .container {
   width: 55%;
   cursor: pointer;
 }
+.volumeControl .volumeBar:active {
+  cursor: grabbing;
+}
 .volumeControl .volumeBar .volumeLevel {
   width: 0%;
   background-color: var(--danger);
   height: 100%;
-  cursor: pointer;
 }
 
 #audio {
   display: none;
 }
 
-.active {
+.playlistItem.active {
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
   transition: all 0.1s linear;
 }
-.active i {
+.playlistItem.active i {
   color: var(--danger);
+}
+
+.volumeLevel,
+.songProgress {
+  transition: width 0.15s linear;
 }/*# sourceMappingURL=style.css.map */
