@@ -18,6 +18,28 @@
   --font-display: "Space Grotesk", system-ui, sans-serif;
 }
 
+@keyframes beatSweepSafe {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+@keyframes appEnter {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 * {
   margin: 0;
   padding: 0;
@@ -44,11 +66,14 @@ button:hover {
 }
 button:active {
   transform: scale(0.94);
-  text-shadow: 0px 0px 0px var(--bg-dark);
+  text-shadow: 0px 0px 0px var(--bg-dark) !important;
 }
 
 body {
   background-color: var(--bg-dark);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 i {
@@ -78,6 +103,9 @@ main .musicPlayerContainer .container {
   grid-template-rows: 10% 75% 1fr;
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "header header" "cover playlist" "controls controls";
+  opacity: 0;
+  transform: scale(0.96);
+  animation: appEnter 700ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .playerHeader {
@@ -95,6 +123,7 @@ main .musicPlayerContainer .container {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.2px;
+  transition: transform 0.3s ease, opacity 0.25s ease;
 }
 
 .playerCover {
@@ -147,6 +176,7 @@ main .musicPlayerContainer .container {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 90%, transparent);
   mask-image: linear-gradient(to bottom, transparent, black 0%, black 90%, transparent);
 }
@@ -178,17 +208,47 @@ main .musicPlayerContainer .container {
   padding-block: 10px;
   scrollbar-width: thin;
   scroll-behavior: smooth;
+  overflow: hidden;
 }
 .playlistBottom .playlistItem {
+  position: relative;
   border-top: 1px solid var(--text-muted);
-  width: 98%;
+  width: 100%;
   padding: 15px;
   font-size: 1rem;
   display: grid;
   grid-template-columns: 5% 1fr 5%;
   font-weight: 700;
-  transition: background-color linear 0.5s, border-top linear 0.3s;
+  transition: background ease 0.25s, border-top ease 0.25s, transform ease 0.25s;
   cursor: pointer;
+  isolation: isolate;
+}
+.playlistBottom .playlistItem .beatAccent {
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 80, 80, 0.25) 45%, rgba(255, 80, 80, 0.45) 50%, rgba(255, 80, 80, 0.25) 55%, transparent 100%);
+  filter: blur(2px);
+  transform: translateX(-120%);
+  opacity: 0;
+}
+.playlistBottom .playlistItem > *:not(.beatAccent) {
+  position: relative;
+  z-index: 1;
+}
+.playlistBottom .playlistItem.active {
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  transition: all 0.1s linear;
+  transform: translateX(6px);
+  animation: activePulse 2.5s ease infinite;
+}
+.playlistBottom .playlistItem.active i {
+  color: var(--danger);
+}
+.playlistBottom .playlistItem.active .beatAccent {
+  animation: beatSweepSafe 2.6s ease-in-out infinite;
 }
 .playlistBottom .playlistItem:last-child {
   border-bottom: 1px solid var(--text-muted);
@@ -207,9 +267,19 @@ main .musicPlayerContainer .container {
   width: fit-content;
   margin-right: auto;
 }
+.playlistBottom .playlistItem .duration {
+  transform: translateX(150%);
+  transition: transform 0.35s ease, opacity 0.15s ease;
+  opacity: 0;
+}
 .playlistBottom .playlistItem:hover {
+  transform: translateX(4px);
   background-color: rgba(0, 0, 0, 0.5);
   border-top: 1px solid var(--text);
+}
+.playlistBottom .playlistItem:hover .duration {
+  transform: translateX(-50%);
+  opacity: 1;
 }
 
 .playerControl {
@@ -271,6 +341,7 @@ main .musicPlayerContainer .container {
 }
 .musicStatus .musicStatusTop .songName {
   color: var(--danger);
+  transition: transform 0.3s ease, opacity 0.25s ease;
 }
 .musicStatus .musicStatusTop .iconGroup {
   display: flex;
@@ -305,7 +376,6 @@ main .musicPlayerContainer .container {
   height: 8px;
   background-color: var(--text-muted);
   cursor: pointer;
-  overflow: hidden;
 }
 .musicStatusMiddle .songBar:active {
   cursor: grabbing;
@@ -314,6 +384,15 @@ main .musicPlayerContainer .container {
   background-color: var(--danger);
   height: 100%;
   width: 0%;
+  position: relative;
+}
+.musicStatusMiddle .songBar .songProgress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(6px);
+  opacity: 0.6;
 }
 
 .musicStatusBottom {
@@ -325,6 +404,7 @@ main .musicPlayerContainer .container {
   font-weight: 700;
   font-size: 0.9rem;
   opacity: 0.7;
+  transition: transform 0.3s ease, opacity 0.25s ease;
 }
 .musicStatusBottom .songDuration {
   color: var(--text);
@@ -359,15 +439,6 @@ main .musicPlayerContainer .container {
 
 #audio {
   display: none;
-}
-
-.playlistItem.active {
-  -webkit-backdrop-filter: blur(6px);
-          backdrop-filter: blur(6px);
-  transition: all 0.1s linear;
-}
-.playlistItem.active i {
-  color: var(--danger);
 }
 
 .volumeLevel,

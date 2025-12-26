@@ -5,7 +5,7 @@ const totalSongs = [
     src: "./songs/Your Love.mp3",
     artist: "She Wants Revenge",
     cover: "./covers/Your Love.png",
-    duration: "3:36",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -13,7 +13,7 @@ const totalSongs = [
     src: "./songs/Missing Textures.mp3",
     artist: "NIVEK FFORHS",
     cover: "./covers/Missing Textures.png",
-    duration: "2:47",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -21,7 +21,7 @@ const totalSongs = [
     src: "./songs/Fe en Rebelión.mp3",
     artist: "yaego",
     cover: "./covers/Fe en Rebelión.png",
-    duration: "4:09",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -29,7 +29,7 @@ const totalSongs = [
     src: "./songs/The Way I Are.mp3",
     artist: "Timbaland",
     cover: "./covers/The Way I Are.png",
-    duration: "3:00",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -37,7 +37,7 @@ const totalSongs = [
     src: "./songs/KEEP FOLLOWING.mp3",
     artist: "Odetari",
     cover: "./covers/KEEP FOLLOWING.png",
-    duration: "1:55",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -45,7 +45,7 @@ const totalSongs = [
     src: "./songs/Dracula.mp3",
     artist: "Tame Impala",
     cover: "./covers/Dracula.png",
-    duration: "3:26",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -53,7 +53,7 @@ const totalSongs = [
     src: "./songs/Love Potions (Slowed + Reverb).mp3",
     artist: "Throwback Trance",
     cover: "./covers/Love Potions (Slowed + Reverb).png",
-    duration: "3:13",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -61,7 +61,7 @@ const totalSongs = [
     src: "./songs/Killshot.mp3",
     artist: "Magdalena Bay",
     cover: "./covers/Killshot.png",
-    duration: "3:57",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -69,7 +69,7 @@ const totalSongs = [
     src: "./songs/PROTECTION CHARM (SLOW & HARD Version).mp3",
     artist: "Miguel Angeles",
     cover: "./covers/PROTECTION CHARM (SLOW & HARD Version).png",
-    duration: "3:31",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -77,7 +77,7 @@ const totalSongs = [
     src: "./songs/NEW DROP.mp3",
     artist: "Don Toliver",
     cover: "./covers/NEW DROP.png",
-    duration: "3:38",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -85,7 +85,7 @@ const totalSongs = [
     src: "./songs/I Was Made For Lovin' You.mp3",
     artist: "Kiss",
     cover: "./covers/I Was Made For Lovin' You.png",
-    duration: "4:32",
+    duration: "--:--",
     liked: false,
   },
   {
@@ -93,7 +93,7 @@ const totalSongs = [
     src: "./songs/Stayin Alive.mp3",
     artist: "Bee Gees",
     cover: "./covers/Stayin Alive.png",
-    duration: "4:44",
+    duration: "--:--",
     liked: false,
   },
 ];
@@ -112,6 +112,7 @@ const playerState = {
   currentColor: { r: 218, g: 41, b: 28 }, // default red
   isSeeking: false,
   isVolumeDragging: false,
+  currentTime: 0,
 };
 
 // audio element
@@ -160,6 +161,57 @@ const volumeBarEl = document.querySelector(".volumeBar");
 //volume bar can be dragged and clicked to set volume
 const volumeLevelEl = document.querySelector(".volumeLevel");
 
+function getSavableState() {
+  return {
+    currentIndex: playerState.currentIndex,
+    isShuffle: playerState.isShuffle,
+    isLooped: playerState.isLooped,
+    shuffleOrder: playerState.shuffleOrder,
+    shufflePointer: playerState.shufflePointer,
+    volume: playerState.volume,
+    lastVolume: playerState.lastVolume,
+    isMute: playerState.isMute,
+    likedSongs: totalSongs.map((song) => song.liked),
+  };
+}
+
+function savePlayerState() {
+  localStorage.setItem("musicPlayerState", JSON.stringify(getSavableState()));
+}
+
+function restorePlayerState() {
+  const raw = localStorage.getItem("musicPlayerState");
+  if (!raw) return;
+
+  try {
+    const saved = JSON.parse(raw);
+
+    playerState.currentIndex = saved.currentIndex ?? 0;
+    playerState.isShuffle = !!saved.isShuffle;
+    playerState.isLooped = !!saved.isLooped;
+    playerState.shuffleOrder = saved.shuffleOrder || [];
+    playerState.shufflePointer = saved.shufflePointer || 0;
+    playerState.volume = saved.volume ?? 1;
+    playerState.lastVolume = saved.lastVolume ?? playerState.volume;
+    playerState.isMute = !!saved.isMute;
+    if (
+      playerState.isShuffle &&
+      (!Array.isArray(playerState.shuffleOrder) ||
+        playerState.shuffleOrder.length !== totalSongs.length)
+    ) {
+      generateShuffleOrder(playerState.currentIndex);
+    }
+
+    if (Array.isArray(saved.likedSongs)) {
+      saved.likedSongs.forEach((val, i) => {
+        if (totalSongs[i]) totalSongs[i].liked = val;
+      });
+    }
+  } catch (err) {
+    console.warn("Failed to restore player state");
+  }
+}
+
 function getDominantColor(songCover) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -185,13 +237,34 @@ function getDominantColor(songCover) {
   };
 }
 
+function formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return "0:00";
+  const min = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60);
+  return `${min}:${sec.toString().padStart(2, "0")}`;
+}
+
+function hydrateSongDuration(index) {
+  const song = totalSongs[index];
+  if (song.duration !== "--:--") return;
+  const tempAudio = new Audio();
+  tempAudio.src = song.src;
+  tempAudio.preload = "metadata";
+  tempAudio.addEventListener("loadedmetadata", function () {
+    song.duration = formatTime(tempAudio.duration);
+    renderPlaylist();
+  });
+}
+
 function renderPlaylist() {
   let clutter = "";
   totalSongs.forEach(function (obj, idx) {
+    hydrateSongDuration(idx);
     clutter += `
         <li class="playlistItem ${
           playerState.currentIndex === idx ? "active" : ""
         }" data-index="${idx}">
+        <span class="beatAccent"></span>
         <span class="count">${idx + 1}</span>
         <span class="name">${obj.title}</span>
         <span class="duration">${obj.duration}</span>
@@ -232,25 +305,49 @@ function renderSongUI() {
     renderPlaylist();
   };
   musicPlayerContainerEl.style.backgroundImage = `url("${currentSong.cover}")`;
+  musicStatusSongNameEl.style.transform = "translateY(6px)";
+  musicStatusSongNameEl.style.opacity = "0";
+
+  songTitleEl.style.transform = "translateY(6px)";
+  songTitleEl.style.opacity = "0";
+
+  artistNameEl.style.transform = "translateY(6px)";
+  artistNameEl.style.opacity = "0";
+
+  setTimeout(() => {
+    musicStatusSongNameEl.style.transform = "translateY(0)";
+    musicStatusSongNameEl.style.opacity = "1";
+
+    songTitleEl.style.transform = "translateY(0)";
+    songTitleEl.style.opacity = "1";
+
+    artistNameEl.style.transform = "translateY(0)";
+    artistNameEl.style.opacity = "1";
+  }, 150);
 }
-renderPlaylist();
-renderSongUI();
 
 function initVolume() {
   audioEL.volume = playerState.volume;
   volumeLevelEl.style.width = `${playerState.volume * 100}%`;
 }
 
-initVolume();
-
 function loadSong(index) {
   if (index < 0 || index >= totalSongs.length) return;
   playerState.currentIndex = index;
+  songDurationEl.textContent = `0:00 / ${totalSongs[index].duration}`;
   audioEL.src = totalSongs[index].src;
   renderSongUI();
   renderControls();
+  savePlayerState();
 }
-loadSong(0);
+
+restorePlayerState();
+playerState.isPlaying = false;
+audioEL.pause();
+initVolume();
+loadSong(playerState.currentIndex);
+renderPlaylist();
+renderSongUI();
 
 function playSong() {
   setTimeout(() => {
@@ -388,35 +485,51 @@ function generateShuffleOrder(startIndex = playerState.currentIndex) {
   playerState.shuffleOrder = order;
   playerState.shufflePointer = 0;
   renderControls();
+  savePlayerState();
 }
 
 shuffleBtnEl.addEventListener("click", function () {
   playerState.isShuffle = !playerState.isShuffle;
   if (playerState.isShuffle) generateShuffleOrder(playerState.currentIndex);
   renderControls();
+  savePlayerState();
 });
 
 loopBtnEl.addEventListener("click", function () {
   playerState.isLooped = !playerState.isLooped;
   renderControls();
+  savePlayerState();
 });
 
 likeBtnEl.addEventListener("click", function () {
   const song = totalSongs[playerState.currentIndex];
   song.liked = !song.liked;
   renderControls();
+  savePlayerState();
 });
 
 audioEL.addEventListener("ended", function () {
   nextSong();
-  renderControls();
 });
 
 audioEL.addEventListener("timeupdate", function () {
   if (!audioEL.duration) return;
+  const current = formatTime(audioEL.currentTime);
+  const total = totalSongs[playerState.currentIndex].duration;
+  songDurationEl.textContent = `${current} / ${total}`;
   const percent = (audioEL.currentTime / audioEL.duration) * 100;
   songProgressEl.style.width = `${percent}%`;
   renderControls();
+});
+
+audioEL.addEventListener("loadedmetadata", function () {
+  const song = totalSongs[playerState.currentIndex];
+  if (song.duration === "--:--") {
+    song.duration = formatTime(audioEL.duration);
+    renderPlaylist();
+  }
+  songDurationEl.textContent = `0:00 / ${song.duration}`;
+  renderPlaylist();
 });
 
 playBtnEl.addEventListener("click", function () {
@@ -460,7 +573,7 @@ document.addEventListener("mousemove", function (elem) {
     const moveX = Math.max(0, Math.min(elem.clientX - rect.left, rect.width));
     const percent = moveX / rect.width;
     audioEL.currentTime = percent * audioEL.duration;
-    return; // 🔑 stop here
+    return;
   }
   if (playerState.isVolumeDragging) {
     const rect = volumeBarEl.getBoundingClientRect();
@@ -483,6 +596,7 @@ function applyVolume(vol) {
     playerState.lastVolume = vol;
   }
   renderControls();
+  savePlayerState();
 }
 
 volumeDownBtnEl.addEventListener("click", function () {
@@ -490,7 +604,7 @@ volumeDownBtnEl.addEventListener("click", function () {
     applyVolume(playerState.lastVolume);
     return;
   }
-  applyVolume(playerState.volume - 0.1);
+  applyVolume(playerState.volume - 0.05);
   renderControls();
 });
 
@@ -498,7 +612,7 @@ volumeUpBtnEl.addEventListener("click", function () {
   if (playerState.isMute) {
     applyVolume(playerState.lastVolume || 0.5);
   } else {
-    applyVolume(Math.min(playerState.volume + 0.1, 1));
+    applyVolume(Math.min(playerState.volume + 0.05, 1));
   }
   renderControls();
 });
@@ -513,9 +627,10 @@ volumeDownBtnEl.addEventListener("dblclick", function () {
   renderControls();
 });
 
-volumeBarEl.addEventListener("click", function (elem) {
+volumeBarEl.addEventListener("click", function (e) {
   const rect = volumeBarEl.getBoundingClientRect();
-  const percent = (elem.clickX - rect.left) / rect.width;
+  const moveX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+  const percent = moveX / rect.width;
   applyVolume(percent);
   renderControls();
 });
@@ -527,4 +642,48 @@ volumeBarEl.addEventListener("mousedown", function (elem) {
   const percent = moveX / rect.width;
   applyVolume(percent);
   renderControls();
+});
+
+function toggleMute() {
+  if (!playerState.isMute) {
+    playerState.lastVolume = playerState.volume;
+    applyVolume(0);
+    playerState.isMute = true;
+  } else {
+    applyVolume(playerState.lastVolume || 0.5);
+    playerState.isMute = false;
+  }
+  savePlayerState();
+}
+
+document.addEventListener("keydown", function (elem) {
+  if (elem.target.tagName === "INPUT") return;
+
+  switch (elem.code) {
+    case "Space":
+      elem.preventDefault();
+      playerState.isPlaying ? pauseSong() : playSong();
+      break;
+    case "ArrowRight":
+      nextSong();
+      break;
+    case "ArrowLeft":
+      prevSong();
+      break;
+    case "KeyL":
+      loopBtnEl.click();
+      break;
+    case "KeyS":
+      shuffleBtnEl.click();
+      break;
+    case "KeyM":
+      toggleMute();
+      break;
+    case "ArrowUp":
+      applyVolume(Math.min(playerState.volume + 0.05, 1));
+      break;
+    case "ArrowDown":
+      applyVolume(Math.max(playerState.volume - 0.05, 0));
+      break;
+  }
 });
