@@ -293,7 +293,9 @@ function renderPlaylist() {
 
 function renderSongUI() {
   const currentSong = totalSongs[playerState.currentIndex];
-
+  document.querySelector("title").innerHTML = playerState.isPlaying
+    ? `Playing ${currentSong.title}`
+    : `Music Player`;
   songTitleEl.textContent = currentSong.title;
   musicStatusSongNameEl.textContent = currentSong.title;
   artistNameEl.textContent = currentSong.artist;
