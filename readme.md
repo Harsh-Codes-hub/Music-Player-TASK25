@@ -25,7 +25,7 @@ The focus is on **state-driven architecture**, **HTML5 Audio API**, **DOM-heavy 
 ## 🌐 Live Demo / Review
 
 You can view and interact with the project here:  
-[👉 **Music Player - Live Demo**](https://harsh-codes-hub.github.io/Music-Player-TASK25/)
+👉 [**Music Player - Live Demo**](https://harsh-codes-hub.github.io/Music-Player-TASK25/)
 
 Play songs, shuffle the playlist, adjust volume, or control playback using your keyboard.
 
